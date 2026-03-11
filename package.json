@@ -1,0 +1,24 @@
+{
+  "name": "carmed",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CarMed - Door-to-door auto service platform",
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter backend dev\" \"pnpm --filter client-portal dev\" \"pnpm --filter manager-portal dev\" \"pnpm --filter admin-portal dev\"",
+    "dev:backend": "pnpm --filter backend dev",
+    "dev:client": "pnpm --filter client-portal dev",
+    "dev:manager": "pnpm --filter manager-portal dev",
+    "dev:admin": "pnpm --filter admin-portal dev",
+    "build": "pnpm --filter @carmed/shared build && pnpm -r --filter !@carmed/shared build",
+    "lint": "pnpm -r lint",
+    "clean": "pnpm -r exec rm -rf node_modules dist .turbo"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}

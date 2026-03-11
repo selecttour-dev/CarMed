@@ -1,0 +1,466 @@
+// ============================================================
+// CarMed Database Schema - Prisma ORM
+// Implements: Users, Vehicles, Orders, Invoices, Transactions,
+//             Manager Profiles, Notifications
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── Enums ────────────────────────────────────────────────────
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  CLIENT
+}
+
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+}
+
+enum OrderStatus {
+  PENDING
+  ACCEPTED
+  PICKED_UP
+  IN_PROGRESS
+  COMPLETED
+  CANCELED
+  REJECTED
+}
+
+enum TransactionType {
+  CLIENT_TO_MANAGER
+  MANAGER_TO_COMPANY
+  GUARANTEE_FUND_DEDUCTION
+}
+
+enum TransactionStatus {
+  PENDING
+  CONFIRMED
+  DISPUTED
+}
+
+enum NotificationType {
+  ORDER_CREATED
+  ORDER_STATUS_CHANGED
+  ORDER_REJECTED
+  INVOICE_SENT
+  PAYMENT_RECEIVED
+  CROSS_VERIFICATION_ALERT // @deprecated - no longer used
+  ADMIN_ALERT
+}
+
+// ── Users ────────────────────────────────────────────────────
+
+model User {
+  id           String     @id @default(uuid())
+  role         UserRole
+  name         String
+  phone        String     @unique
+  email        String?    @unique
+  passwordHash String
+  status       UserStatus @default(ACTIVE)
+  lastLoginAt  DateTime?
+
+  // Relationships
+  vehicles      Vehicle[]
+  clientOrders  Order[]        @relation("ClientOrders")
+  managerOrders Order[]        @relation("ManagerOrders")
+  managerProfile ManagerProfile?
+  notifications Notification[]
+  refreshTokens RefreshToken[]
+  statusChanges OrderStatusHistory[] @relation("StatusChangedBy")
+  activityLogs  ActivityLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+// ── Activity Logs ────────────────────────────────────────────
+
+model ActivityLog {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action      String   // LOGIN, LOGOUT, STATUS_CHANGE, ORDER_CREATE, INVOICE_CREATE, etc.
+  description String
+  ipAddress   String?
+  userAgent   String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("activity_logs")
+}
+
+// ── Refresh Tokens ───────────────────────────────────────────
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("refresh_tokens")
+}
+
+// ── Vehicles ─────────────────────────────────────────────────
+
+model Vehicle {
+  id          String  @id @default(uuid())
+  clientId    String
+  client      User    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  make        String
+  model       String
+  year        Int
+  vin         String?
+  plateNumber String
+  color       String?
+  photoUrl    String?
+
+  orders Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("vehicles")
+}
+
+// ── Orders (Tasks) ───────────────────────────────────────────
+
+model Order {
+  id                 String      @id @default(uuid())
+  clientId           String
+  client             User        @relation("ClientOrders", fields: [clientId], references: [id])
+  managerId          String?
+  manager            User?       @relation("ManagerOrders", fields: [managerId], references: [id])
+  vehicleId          String
+  vehicle            Vehicle     @relation(fields: [vehicleId], references: [id])
+  status             OrderStatus @default(PENDING)
+  address            String
+  problemDescription String
+
+  // Payment verification (RULE 2)
+  receiptImageUrl    String?    // @deprecated - no longer used
+  receiptUploadedAt  DateTime?  // @deprecated - no longer used
+  managerConfirmedPayment Boolean @default(false)
+  managerConfirmedAt DateTime?
+
+  // Relations
+  invoice      Invoice?
+  transactions Transaction[]
+  statusHistory OrderStatusHistory[]
+  review       Review?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("orders")
+}
+
+// ── Order Status History (Audit Trail) ───────────────────────
+
+model OrderStatusHistory {
+  id         String      @id @default(uuid())
+  orderId    String
+  order      Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  fromStatus OrderStatus
+  toStatus   OrderStatus
+  changedById String
+  changedBy  User        @relation("StatusChangedBy", fields: [changedById], references: [id])
+  notes      String?
+  createdAt  DateTime    @default(now())
+
+  @@map("order_status_history")
+}
+
+// ── Invoices (Line-Item Based) ───────────────────────────────
+
+model Invoice {
+  id                String @id @default(uuid())
+  orderId           String @unique
+  order             Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  serviceCenterName String
+
+  // Calculated totals (updated when lines change)
+  totalNetCost      Float  @default(0)   // Sum of line netCosts — manager+admin only
+  totalClientPrice  Float  @default(0)   // Sum of line clientPrices
+  carmedFee         Float  @default(0)   // Platform fee
+  totalAmount       Float  @default(0)   // totalClientPrice + carmedFee = what client pays
+
+  // @deprecated — kept for backward compat, use lines instead
+  partsCost         Float  @default(0)
+  laborCost         Float  @default(0)
+
+  note              String?
+  managerFeePaid    Boolean @default(false)  // Manager confirmed fee payment to company
+
+  lines              InvoiceLine[]
+  correctionRequests InvoiceCorrectionRequest[]
+
+  // Client approval
+  clientApprovalStatus InvoiceApprovalStatus @default(PENDING)
+  clientApprovalNote   String?
+  clientApprovedAt     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("invoices")
+}
+
+model InvoiceLine {
+  id          String  @id @default(uuid())
+  invoiceId   String
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  description String           // ნაწილის ან სერვისის სახელი
+  quantity    Int      @default(1)
+  netCost     Float             // ნეტო ფასი (მენეჯერი+ადმინი ხედავს)
+  clientPrice Float             // კლიენტის ფასი
+  type        InvoiceLineType  @default(PART)
+  quality     PartQuality?      // ორიგინალი / არაორიგინალი / მეორადი
+  brand       String?           // მწარმოებელი/ბრენდი (Bosch, TRW, Toyota Genuine...)
+
+  // Client approval per line
+  clientApprovalStatus InvoiceApprovalStatus @default(PENDING)
+  clientRejectionReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("invoice_lines")
+}
+
+enum InvoiceLineType {
+  PART     // ნაწილი
+  LABOR    // სამუშაო
+  OTHER    // სხვა
+}
+
+enum InvoiceApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  PARTIALLY_APPROVED  // ზოგი მიღებულია, ზოგი არა
+}
+
+enum PartQuality {
+  OEM           // ორიგინალი (ქარხნული)
+  AFTERMARKET   // არაორიგინალი
+  USED_OEM      // მეორადი ორიგინალი
+  REFURBISHED   // აღდგენილი/რესტავრირებული
+}
+
+// ── Invoice Correction Requests ──────────────────────────────
+// Manager requests edit/delete after 2h window; admin approves
+
+model InvoiceCorrectionRequest {
+  id            String           @id @default(uuid())
+  invoiceId     String
+  invoice       Invoice          @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  invoiceLineId String?          // which line to edit/delete (null for ADD)
+  managerId     String
+  type          CorrectionType   // EDIT, DELETE, ADD
+
+  reason        String           // მიზეზი
+
+  // For EDIT/ADD — proposed new values
+  newDescription  String?
+  newNetCost      Float?
+  newClientPrice  Float?
+  newQuantity     Int?
+  newType         InvoiceLineType?
+
+  status        CorrectionStatus @default(PENDING)
+  adminId       String?          // who resolved
+  adminNote     String?
+  resolvedAt    DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("invoice_correction_requests")
+}
+
+enum CorrectionType {
+  EDIT
+  DELETE
+  ADD
+}
+
+enum CorrectionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// ── Transactions & Finances ──────────────────────────────────
+
+model Transaction {
+  id              String            @id @default(uuid())
+  orderId         String
+  order           Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  managerId       String
+  amount          Float
+  type            TransactionType
+  receiptImageUrl String? // @deprecated - no longer used
+  status          TransactionStatus @default(PENDING)
+  confirmedAt     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("transactions")
+}
+
+// ── Manager Profiles ─────────────────────────────────────────
+
+model ManagerProfile {
+  id                    String  @id @default(uuid())
+  userId                String  @unique
+  user                  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Personal details
+  surname               String?
+  personalId            String?   // პნ (პირადი ნომერი)
+  dateOfBirth           DateTime?
+  personalAddress       String?
+
+  // Bank details (visible to clients for payments)
+  bankName              String?
+  bankAccountNumber     String?
+  bankAccountName       String?   // ანგარიშზე მითითებული სახელი
+
+  // Financial
+  commissionPercentage  Float   @default(60)
+  guaranteeFundBalance  Float   @default(0)
+  currentDebtToCompany  Float   @default(0)
+  companyFeePercent     Float   @default(20)  // % of net cost manager must pay to company
+
+  // Availability
+  isAvailable           Boolean @default(true)
+
+  // Profile completion
+  isProfileComplete     Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("manager_profiles")
+}
+
+// ── Notifications ────────────────────────────────────────────
+
+model Notification {
+  id       String           @id @default(uuid())
+  userId   String
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type     NotificationType
+  title    String
+  message  String
+  isRead   Boolean          @default(false)
+  metadata Json?
+
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}
+
+// ── System Settings ──────────────────────────────────────────
+
+model SystemSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+
+  @@map("system_settings")
+}
+
+// ── Parts Catalog (Auto-populated from invoices) ─────────────
+// ერთხელ რომ დაამატებ "ბაბინა"-ს Mercedes GLE Coupe-ზე,
+// მეორეჯერ autocomplete-ით ამოვარდება
+
+model PartsCatalog {
+  id              String          @id @default(uuid())
+  make            String          // მარკა: Toyota, Mercedes ...
+  model           String          // მოდელი: Camry, GLE Coupe ...
+  partName        String          // ნაწილი/სერვისი
+  type            InvoiceLineType @default(PART)
+  quality         PartQuality?    // ხარისხის კატეგორია
+  brand           String?         // ბრენდი (Bosch, Brembo...)
+
+  // Price tracking
+  avgNetCost      Float   @default(0)
+  avgClientPrice  Float   @default(0)
+  lastNetCost     Float   @default(0)
+  lastClientPrice Float   @default(0)
+  minClientPrice  Float   @default(0)
+  maxClientPrice  Float   @default(0)
+  usageCount      Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([make, model, partName, quality])
+  @@map("parts_catalog")
+}
+
+// ── Price Alerts (>10% deviation from catalog avg) ───────────
+// მენეჯერს არ დაბლოკავს, ადმინს აჩვენებს
+
+model PriceAlert {
+  id              String  @id @default(uuid())
+  invoiceLineId   String
+  catalogId       String?
+  managerId       String
+  orderId         String
+
+  partName        String
+  make            String
+  model           String
+  quality         PartQuality?  // რა ხარისხის ნაწილი იყო
+  brand           String?       // რა ბრენდი იყო
+  expectedPrice   Float         // catalog avg clientPrice
+  actualPrice     Float         // რა ფასი დაწერა მენეჯერმა
+  deviationPct    Float         // % deviation
+  alertType       String  @default("PRICE_DEVIATION") // PRICE_DEVIATION, QUALITY_MISMATCH
+
+  status          String  @default("PENDING") // PENDING, REVIEWED, DISMISSED
+
+  createdAt DateTime @default(now())
+
+  @@map("price_alerts")
+}
+
+// ── Reviews (Client rates Manager) ──────────────────────────
+
+model Review {
+  id        String @id @default(uuid())
+  orderId   String @unique
+  order     Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  clientId  String
+  managerId String
+  rating    Int    // 1-5 stars
+  comment   String?
+
+  createdAt DateTime @default(now())
+
+  @@index([managerId])
+  @@index([clientId])
+  @@map("reviews")
+}
