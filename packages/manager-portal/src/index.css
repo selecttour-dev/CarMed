@@ -876,7 +876,7 @@ textarea.form-input {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100;
+  z-index: 10000;
   animation: fadeIn 0.15s;
 }
 
@@ -2895,8 +2895,8 @@ tbody tr:hover {
     max-width: 100%;
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
     padding: 24px 20px;
-    padding-bottom: max(24px, env(safe-area-inset-bottom));
-    max-height: 85vh;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+    max-height: 90vh;
   }
 
   /* Profile incomplete bar */
