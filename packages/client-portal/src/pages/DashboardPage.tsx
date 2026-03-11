@@ -5,7 +5,7 @@ import api from '../lib/api';
 import {
     Car, ArrowRight, Plus, Clock, MapPin, Wrench,
     CheckCircle2, AlertCircle, ChevronRight, Zap, CreditCard,
-    TrendingUp, Shield, Activity, Gauge, ArrowUpRight
+    Shield, Activity, ArrowUpRight
 } from 'lucide-react';
 import { getMakeLogo, CAR_COLORS } from '../data/carDatabase';
 

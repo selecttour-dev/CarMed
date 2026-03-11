@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
-import { ArrowLeft, Send, Car, MapPin, FileText, Check, AlertCircle, Sparkles, User, Phone } from 'lucide-react';
+import { ArrowLeft, Send, Car, MapPin, Check, AlertCircle, Sparkles, User, Phone } from 'lucide-react';
 import { getMakeLogo, CAR_COLORS } from '../data/carDatabase';
 
 interface Vehicle {

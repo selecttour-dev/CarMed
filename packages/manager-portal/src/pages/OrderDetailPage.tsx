@@ -52,9 +52,9 @@ export default function OrderDetailPage() {
     const [showSuggestions, setShowSuggestions] = useState(false);
     const suggestionsTimeout = useRef<any>(null);
 
-    const [brandSuggestions, setBrandSuggestions] = useState<string[]>([]);
-    const [showBrandSuggestions, setShowBrandSuggestions] = useState(false);
-    const [activeBrandIdx, setActiveBrandIdx] = useState<number | null>(null);
+    const [, setBrandSuggestions] = useState<string[]>([]);
+    const [, setShowBrandSuggestions] = useState(false);
+    const [, setActiveBrandIdx] = useState<number | null>(null);
     const brandTimeout = useRef<any>(null);
 
     const [showAddLineForm, setShowAddLineForm] = useState(false);
@@ -701,7 +701,7 @@ export default function OrderDetailPage() {
 }
 
 /* ─── Add Line Inline Form ─── */
-function AddLineForm({ data, setData, suggestions, showSuggestions, brandSuggestions, showBrandSuggestions, fetchSuggestions, fetchBrandSuggestions, setShowSuggestions, setShowBrandSuggestions, submitting, onCancel, onSubmit }: any) {
+function AddLineForm({ data, setData, suggestions, showSuggestions, fetchSuggestions, fetchBrandSuggestions, setShowSuggestions, setShowBrandSuggestions, submitting, onCancel, onSubmit }: any) {
     return (
         <div style={{ padding: '16px', borderRadius: '14px', border: '1px solid rgba(4,120,87,0.15)', background: '#ECFDF5' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>

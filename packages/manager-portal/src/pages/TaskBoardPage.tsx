@@ -4,7 +4,7 @@ import { useManagerContext } from '../components/DashboardLayout';
 import api from '../lib/api';
 import {
     MapPin, Clock, XCircle, Loader2, Car, User, ChevronRight, AlertCircle,
-    Coffee, Search, Phone, Activity, CheckCircle2, Truck, Ban, ThumbsUp, Filter
+    Coffee, Search, Phone, Activity, CheckCircle2, Truck, Ban, ThumbsUp
 } from 'lucide-react';
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {

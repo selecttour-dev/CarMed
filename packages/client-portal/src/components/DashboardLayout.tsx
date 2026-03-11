@@ -1,6 +1,6 @@
 import { Outlet, NavLink, useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
-import { LayoutDashboard, Car, ClipboardList, Plus, LogOut, ChevronDown, Settings, User as UserIcon } from 'lucide-react';
+import { LayoutDashboard, Car, ClipboardList, Plus, LogOut, ChevronDown, Settings } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 
 export default function DashboardLayout() {

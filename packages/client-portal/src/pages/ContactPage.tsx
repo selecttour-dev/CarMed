@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import PublicNavbar from '../components/PublicNavbar';
 import Footer from '../components/Footer';
-import { Phone, Mail, MapPin, Clock, Send, CheckCircle2, MessageCircle, ArrowRight } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, Send, CheckCircle2, MessageCircle } from 'lucide-react';
 
 export default function ContactPage() {
     const [form, setForm] = useState({ name: '', phone: '', email: '', message: '' });
@@ -84,8 +84,8 @@ export default function ContactPage() {
                             <div key={i} className="bg-white rounded-2xl border border-surface-100 p-6 
                 hover:shadow-card hover:-translate-y-1 transition-all duration-300 group">
                                 <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-4 transition-colors duration-300 ${card.color === 'terracotta'
-                                        ? 'bg-terracotta-100 text-terracotta-700 group-hover:bg-terracotta-600 group-hover:text-white'
-                                        : 'bg-emerald-100 text-emerald-700 group-hover:bg-emerald-700 group-hover:text-white'
+                                    ? 'bg-terracotta-100 text-terracotta-700 group-hover:bg-terracotta-600 group-hover:text-white'
+                                    : 'bg-emerald-100 text-emerald-700 group-hover:bg-emerald-700 group-hover:text-white'
                                     }`}>
                                     <card.Icon size={20} />
                                 </div>
