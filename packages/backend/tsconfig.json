@@ -6,6 +6,9 @@
         "module": "CommonJS",
         "moduleResolution": "node",
         "esModuleInterop": true,
+        "skipLibCheck": true,
+        "declaration": false,
+        "declarationMap": false,
         "paths": {
             "@carmed/shared": [
                 "../shared/src"
@@ -13,8 +16,7 @@
         }
     },
     "include": [
-        "src",
-        "prisma/seed.ts"
+        "src"
     ],
     "exclude": [
         "node_modules",
