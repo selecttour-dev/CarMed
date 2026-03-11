@@ -2276,6 +2276,89 @@ tbody tr:hover {
   background: #FAFBFC;
 }
 
+/* Invoice cell classes */
+.inv-cell-desc {
+  min-width: 0;
+}
+
+.inv-cell-prices {
+  display: contents;
+}
+
+.inv-price-label {
+  display: none;
+}
+
+.inv-price-item {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+
+.inv-price-item:nth-child(1) {
+  text-align: center;
+}
+
+.inv-price-item:nth-child(2),
+.inv-price-item:nth-child(3) {
+  text-align: right;
+}
+
+.inv-price-bold {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.inv-cell-actions {
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.inv-action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inv-action-edit {
+  color: #047857;
+}
+
+.inv-action-edit:hover {
+  background: #ECFDF5;
+}
+
+.inv-action-delete {
+  color: #DC2626;
+}
+
+.inv-action-delete:hover {
+  background: #FEF2F2;
+}
+
+.inv-rejection-reason {
+  grid-column: 1 / -1;
+  margin-top: 4px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: #FEF2F2;
+  border: 1px solid rgba(220,38,38,0.1);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #DC2626;
+}
+
 .invoice-totals-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -3099,14 +3182,84 @@ tbody tr:hover {
   .invoice-table-row {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    padding: 12px 14px;
+    gap: 8px;
+    padding: 14px;
     border-bottom: 1px solid var(--surface-100);
     font-size: 13px;
   }
 
   .invoice-table-row:last-child {
     border-bottom: none;
+  }
+
+  .inv-cell-desc {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .inv-cell-prices {
+    display: flex;
+    gap: 0;
+    background: var(--surface-50);
+    border-radius: 10px;
+    padding: 8px 4px;
+  }
+
+  .inv-price-label {
+    display: block;
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 2px;
+    font-family: var(--font-sans);
+  }
+
+  .inv-price-item {
+    flex: 1;
+    text-align: center !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2px 8px;
+    border-right: 1px solid var(--surface-100);
+  }
+
+  .inv-price-item:last-child {
+    border-right: none;
+  }
+
+  .inv-price-value {
+    font-family: var(--font-mono);
+    font-size: 13px;
+  }
+
+  .inv-price-muted {
+    color: var(--ink-muted);
+  }
+
+  .inv-price-bold {
+    font-size: 14px;
+    font-weight: 800;
+    color: #047857;
+  }
+
+  .inv-cell-actions {
+    justify-content: flex-start;
+    gap: 6px;
+  }
+
+  .inv-action-btn {
+    padding: 6px 8px;
+    border-radius: 8px;
+    background: var(--surface-50);
+  }
+
+  .inv-rejection-reason {
+    margin-top: 0;
   }
 
   .invoice-totals-grid {

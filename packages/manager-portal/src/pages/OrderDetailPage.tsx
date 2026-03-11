@@ -317,7 +317,8 @@ export default function OrderDetailPage() {
                                             const editable = canDirectEdit(line) && !isCompleted;
                                             return (
                                                 <div key={line.id} className="invoice-table-row">
-                                                    <div>
+                                                    {/* Desktop grid cells */}
+                                                    <div className="inv-cell-desc">
                                                         <span style={{ fontWeight: 600 }}>{line.description}</span>
                                                         <span style={{
                                                             fontSize: '10px', padding: '2px 6px', borderRadius: '5px', marginLeft: '6px',
@@ -332,10 +333,22 @@ export default function OrderDetailPage() {
                                                             }}>{QUALITY_LABELS[(line as any).quality] || (line as any).quality}</span>
                                                         )}
                                                     </div>
-                                                    <span style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', color: 'var(--ink-muted)', fontSize: '12px' }}>{line.quantity}</span>
-                                                    <span style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--ink-muted)', fontSize: '12px' }}>₾{(line.netCost * line.quantity).toFixed(0)}</span>
-                                                    <span style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '13px' }}>₾{(line.clientPrice * line.quantity).toFixed(0)}</span>
-                                                    <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end', alignItems: 'center' }}>
+                                                    {/* Mobile: price row */}
+                                                    <div className="inv-cell-prices">
+                                                        <span className="inv-price-item">
+                                                            <span className="inv-price-label">რაოდ.</span>
+                                                            <span className="inv-price-value">{line.quantity}</span>
+                                                        </span>
+                                                        <span className="inv-price-item">
+                                                            <span className="inv-price-label">ნეტო</span>
+                                                            <span className="inv-price-value inv-price-muted">₾{(line.netCost * line.quantity).toFixed(0)}</span>
+                                                        </span>
+                                                        <span className="inv-price-item">
+                                                            <span className="inv-price-label">კლიენტი</span>
+                                                            <span className="inv-price-value inv-price-bold">₾{(line.clientPrice * line.quantity).toFixed(0)}</span>
+                                                        </span>
+                                                    </div>
+                                                    <div className="inv-cell-actions">
                                                         {/* Client approval status per line */}
                                                         {(() => {
                                                             const lineApproval = (line as any).clientApprovalStatus || 'PENDING';
@@ -358,32 +371,18 @@ export default function OrderDetailPage() {
                                                         })()}
                                                         {!isCompleted && (
                                                             <>
-                                                                <button onClick={() => openEditModal(line)} style={{
-                                                                    background: 'none', border: 'none', cursor: 'pointer', padding: '4px',
-                                                                    color: '#047857', borderRadius: '6px', transition: 'background 0.15s',
-                                                                }} title="რედაქტირება"
-                                                                    onMouseEnter={e => e.currentTarget.style.background = '#ECFDF5'}
-                                                                    onMouseLeave={e => e.currentTarget.style.background = 'none'}
-                                                                ><Edit2 size={13} /></button>
-                                                                <button onClick={() => handleDeleteLine(line)} style={{
-                                                                    background: 'none', border: 'none', cursor: 'pointer', padding: '4px',
-                                                                    color: editable ? '#DC2626' : 'var(--ink-faint)', borderRadius: '6px', transition: 'background 0.15s',
-                                                                }} title={editable ? 'წაშლა' : 'წაშლის მოთხოვნა'}
-                                                                    onMouseEnter={e => e.currentTarget.style.background = '#FEF2F2'}
-                                                                    onMouseLeave={e => e.currentTarget.style.background = 'none'}
-                                                                ><Trash2 size={13} /></button>
+                                                                <button onClick={() => openEditModal(line)} className="inv-action-btn inv-action-edit" title="რედაქტირება">
+                                                                    <Edit2 size={13} />
+                                                                </button>
+                                                                <button onClick={() => handleDeleteLine(line)} className="inv-action-btn inv-action-delete" title={editable ? 'წაშლა' : 'წაშლის მოთხოვნა'}>
+                                                                    <Trash2 size={13} />
+                                                                </button>
                                                             </>
                                                         )}
                                                     </div>
                                                     {/* Rejection reason inline */}
                                                     {(line as any).clientApprovalStatus === 'REJECTED' && (line as any).clientRejectionReason && (
-                                                        <div style={{
-                                                            gridColumn: '1 / -1', marginTop: '4px',
-                                                            padding: '6px 12px', borderRadius: '8px',
-                                                            background: '#FEF2F2', border: '1px solid rgba(220,38,38,0.1)',
-                                                            display: 'flex', alignItems: 'center', gap: '6px',
-                                                            fontSize: '11px', color: '#DC2626',
-                                                        }}>
+                                                        <div className="inv-rejection-reason">
                                                             <MessageSquare size={11} style={{ flexShrink: 0 }} />
                                                             <span><strong>კლიენტის მიზეზი:</strong> {(line as any).clientRejectionReason}</span>
                                                         </div>
