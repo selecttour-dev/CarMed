@@ -58,21 +58,21 @@ export default function OrdersPage() {
     return (
         <div className="animate-fade-in">
             {/* Header */}
-            <div className="flex items-center justify-between mb-6 animate-fade-in-up">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 sm:mb-6 animate-fade-in-up">
                 <div>
-                    <h1 className="page-title">ჩემი შეკვეთები</h1>
+                    <h1 className="text-[20px] sm:text-[24px] font-extrabold tracking-tight text-ink font-display">ჩემი შეკვეთები</h1>
                     <p className="page-subtitle">
                         {orders.length > 0 ? `${orders.length} შეკვეთა სულ` : 'თვალყური ადევნეთ სერვის შეკვეთებს'}
                     </p>
                 </div>
-                <button className="btn-primary text-[13px] px-5 py-2.5"
+                <button className="btn-primary text-[13px] px-5 py-2.5 w-full sm:w-auto"
                     onClick={() => navigate('/dashboard/orders/new')}>
                     <Plus size={15} strokeWidth={2.5} /> ახალი შეკვეთა
                 </button>
             </div>
 
             {/* Filter Pills */}
-            <div className="flex flex-wrap gap-1.5 mb-6 animate-fade-in-up-1">
+            <div className="flex gap-1.5 mb-5 sm:mb-6 animate-fade-in-up-1 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
                 {FILTERS.map((f) => {
                     const count = f.key === '' ? orders.length : (statusCounts[f.key] || 0);
                     const isActive = filter === f.key;

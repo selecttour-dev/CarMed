@@ -101,12 +101,12 @@ export default function GaragePage() {
     return (
         <div className="animate-fade-in">
             {/* Header */}
-            <div className="flex items-center justify-between mb-8 animate-fade-in-up">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 sm:mb-8 animate-fade-in-up">
                 <div>
-                    <h1 className="page-title">ჩემი გარაჟი</h1>
+                    <h1 className="text-[20px] sm:text-[24px] font-extrabold tracking-tight text-ink font-display">ჩემი მანქანები</h1>
                     <p className="page-subtitle">{vehicles.length} ავტომობილი რეგისტრირებული</p>
                 </div>
-                <button className="btn-primary text-[13px] px-5 py-2.5" onClick={openCreate}>
+                <button className="btn-primary text-[13px] px-5 py-2.5 w-full sm:w-auto" onClick={openCreate}>
                     <Plus size={15} strokeWidth={2.5} /> ავტომობილის დამატება
                 </button>
             </div>
@@ -121,7 +121,7 @@ export default function GaragePage() {
                     <div className="w-16 h-16 rounded-[18px] bg-surface-50 flex items-center justify-center mx-auto mb-5">
                         <Car size={30} className="text-ink-faint" />
                     </div>
-                    <h3 className="text-[17px] font-bold text-ink mb-2">გარაჟი ცარიელია</h3>
+                    <h3 className="text-[17px] font-bold text-ink mb-2">მანქანები არ არის</h3>
                     <p className="text-ink-muted text-[13px] mb-6 max-w-xs mx-auto">
                         დაამატეთ პირველი ავტომობილი და სარგებლეთ CarMed სერვისებით
                     </p>

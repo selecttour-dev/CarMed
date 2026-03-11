@@ -228,14 +228,9 @@ export default function OrderDetailPage() {
             )}
 
             {/* ═══ 2-Column Desktop Layout ═══ */}
-            <div style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 380px',
-                gap: '20px',
-                alignItems: 'start',
-            }}>
+            <div className="order-detail-grid">
                 {/* ── LEFT COLUMN: Main Content ── */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', minWidth: 0 }}>
+                <div className="order-detail-left">
                     {/* Client & Vehicle */}
                     <ClientVehicleCard order={order} isCompleted={isCompleted} />
 
@@ -313,27 +308,15 @@ export default function OrderDetailPage() {
                             {order.invoice ? (
                                 <div>
                                     {/* Line Items Table */}
-                                    <div style={{ borderRadius: '14px', border: '1px solid var(--surface-100)', overflow: 'hidden', marginBottom: '16px' }}>
-                                        <div style={{
-                                            display: 'grid', gridTemplateColumns: '1fr 60px 80px 80px 60px',
-                                            padding: '10px 14px', background: 'var(--surface-50)', borderBottom: '1px solid var(--surface-100)',
-                                            fontSize: '10px', fontWeight: 700, color: 'var(--ink-faint)', textTransform: 'uppercase', letterSpacing: '0.5px',
-                                        }}>
+                                    <div className="invoice-table-wrap">
+                                        <div className="invoice-table-header">
                                             <span>ნაწილი</span><span style={{ textAlign: 'center' }}>რაოდ.</span>
                                             <span style={{ textAlign: 'right' }}>ნეტო</span><span style={{ textAlign: 'right' }}>კლიენტი</span><span />
                                         </div>
                                         {order.invoice.lines?.map((line: InvoiceLine) => {
                                             const editable = canDirectEdit(line) && !isCompleted;
                                             return (
-                                                <div key={line.id} style={{
-                                                    display: 'grid', gridTemplateColumns: '1fr 60px 80px 80px 60px',
-                                                    padding: '12px 14px', borderBottom: '1px solid var(--surface-50)',
-                                                    fontSize: '13px', alignItems: 'center',
-                                                    transition: 'background 0.15s',
-                                                }}
-                                                    onMouseEnter={e => e.currentTarget.style.background = '#FAFBFC'}
-                                                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                                                >
+                                                <div key={line.id} className="invoice-table-row">
                                                     <div>
                                                         <span style={{ fontWeight: 600 }}>{line.description}</span>
                                                         <span style={{
@@ -418,9 +401,7 @@ export default function OrderDetailPage() {
                                         const companyShare = tClient * (feePercent / 100);
                                         const managerProfit = tClient - tNet - companyShare;
                                         return (
-                                            <div style={{
-                                                display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px',
-                                            }}>
+                                            <div className="invoice-totals-grid">
                                                 {/* Left: Net + Client Total */}
                                                 <div style={{ borderRadius: '14px', background: 'var(--surface-50)', padding: '16px 18px' }}>
                                                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: 'var(--ink-muted)', marginBottom: '8px' }}>
@@ -517,7 +498,7 @@ export default function OrderDetailPage() {
                 </div>
 
                 {/* ── RIGHT COLUMN: Photos & Timeline ── */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', position: 'sticky', top: '120px' }}>
+                <div className="order-detail-right">
                     <PhotoUploadSection orderStatus={order.status} isCompleted={isCompleted} />
                     <StatusTimeline statusHistory={order.statusHistory} />
                 </div>

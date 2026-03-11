@@ -112,74 +112,43 @@ export default function TaskBoardPage() {
     return (
         <div className="animate-fade-in">
             {/* ═══ Header ═══ */}
-            <div style={{ marginBottom: '24px' }}>
-                <h1 className="page-title" style={{ fontSize: '26px', marginBottom: '10px' }}>დავალებები</h1>
+            <div className="task-header">
+                <h1 className="page-title task-page-title">დავალებები</h1>
 
                 {/* Quick stat chips */}
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                    <div style={{
-                        display: 'flex', alignItems: 'center', gap: '6px',
-                        padding: '7px 14px', borderRadius: '20px',
-                        background: 'linear-gradient(135deg, #ECFDF5, #D1FAE5)', border: '1px solid rgba(4,120,87,0.1)',
-                        fontSize: '12px', fontWeight: 600, color: 'var(--accent)',
-                    }}>
-                        <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 2s infinite' }} />
+                <div className="task-stat-chips">
+                    <div className="task-chip task-chip-active">
+                        <span className="task-chip-dot" />
                         აქტიური: {activeCount}
                     </div>
                     {pendingCount > 0 && (
-                        <div style={{
-                            display: 'flex', alignItems: 'center', gap: '6px',
-                            padding: '7px 14px', borderRadius: '20px',
-                            background: 'linear-gradient(135deg, #FFFBEB, #FEF3C7)', border: '1px solid rgba(217,119,6,0.1)',
-                            fontSize: '12px', fontWeight: 600, color: '#D97706',
-                        }}>
+                        <div className="task-chip task-chip-pending">
                             <AlertCircle size={12} />
                             ელოდება: {pendingCount}
                         </div>
                     )}
-                    <div style={{
-                        padding: '7px 14px', borderRadius: '20px',
-                        background: 'var(--surface-50)', border: '1px solid var(--surface-100)',
-                        fontSize: '12px', fontWeight: 500, color: 'var(--ink-muted)',
-                    }}>
+                    <div className="task-chip task-chip-total">
                         სულ: {orders.length}
                     </div>
                 </div>
             </div>
 
             {/* ═══ Search ═══ */}
-            <div style={{ position: 'relative', marginBottom: '14px' }}>
-                <Search size={16} style={{
-                    position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)',
-                    color: 'var(--ink-faint)',
-                }} />
-                <input className="form-input"
-                    style={{
-                        paddingLeft: '44px', border: '1.5px solid var(--surface-200)',
-                        borderRadius: '14px', fontSize: '14px', height: '46px',
-                        transition: 'all 0.2s',
-                    }}
+            <div className="task-search-wrap">
+                <Search size={16} className="task-search-icon" />
+                <input className="form-input task-search-input"
                     placeholder="ძიება: კლიენტი, მანქანა, მისამართი..."
                     value={taskSearch} onChange={(e) => setTaskSearch(e.target.value)}
-                    onFocus={e => e.currentTarget.style.borderColor = '#047857'}
-                    onBlur={e => e.currentTarget.style.borderColor = 'var(--surface-200)'}
                 />
                 {taskSearch && (
-                    <button onClick={() => setTaskSearch('')} style={{
-                        position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)',
-                        background: 'var(--surface-100)', border: 'none', cursor: 'pointer', color: 'var(--ink-faint)',
-                        display: 'flex', padding: '4px', borderRadius: '6px',
-                    }}>
+                    <button onClick={() => setTaskSearch('')} className="task-search-clear">
                         <XCircle size={16} />
                     </button>
                 )}
             </div>
 
             {/* ═══ Filters ═══ */}
-            <div style={{
-                display: 'flex', gap: '6px', marginBottom: '20px', flexWrap: 'nowrap',
-                overflowX: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: '2px',
-            }}>
+            <div className="task-filters">
                 {filters.map((f) => {
                     const isActive = filter === f.key;
                     const count = statusCounts[f.key] || 0;
@@ -187,29 +156,20 @@ export default function TaskBoardPage() {
                     return (
                         <button key={f.key}
                             onClick={() => setFilter(f.key)}
+                            className={`task-filter-btn ${isActive ? 'active' : ''}`}
                             style={{
-                                padding: '8px 16px', borderRadius: '20px',
-                                fontSize: '12px', fontWeight: isActive ? 700 : 500,
-                                border: isActive
-                                    ? `1.5px solid ${sc?.color || 'var(--accent)'}`
-                                    : '1.5px solid var(--surface-200)',
-                                background: isActive ? (sc?.bg || 'var(--accent-50)') : 'white',
-                                color: isActive ? (sc?.color || 'var(--accent)') : 'var(--ink-muted)',
-                                cursor: 'pointer', transition: 'all 0.2s',
-                                fontFamily: 'var(--font-sans)',
-                                display: 'flex', alignItems: 'center', gap: '6px',
-                                flexShrink: 0, whiteSpace: 'nowrap',
-                                boxShadow: isActive ? `0 2px 8px ${sc?.color || 'var(--accent)'}15` : 'none',
+                                borderColor: isActive ? (sc?.color || 'var(--accent)') : undefined,
+                                background: isActive ? (sc?.bg || 'var(--accent-50)') : undefined,
+                                color: isActive ? (sc?.color || 'var(--accent)') : undefined,
+                                boxShadow: isActive ? `0 2px 8px ${sc?.color || 'var(--accent)'}15` : undefined,
                             }}>
                             {f.label}
                             {count > 0 && (
-                                <span style={{
-                                    fontSize: '10px', fontWeight: 700, fontFamily: 'var(--font-mono)',
-                                    background: isActive ? `${sc?.color || 'var(--accent)'}15` : 'var(--surface-100)',
-                                    color: isActive ? (sc?.color || 'var(--accent)') : 'var(--ink-faint)',
-                                    padding: '1px 7px', borderRadius: '8px',
-                                    minWidth: '20px', textAlign: 'center',
-                                }}>{count}</span>
+                                <span className="task-filter-count"
+                                    style={{
+                                        background: isActive ? `${sc?.color || 'var(--accent)'}15` : undefined,
+                                        color: isActive ? (sc?.color || 'var(--accent)') : undefined,
+                                    }}>{count}</span>
                             )}
                         </button>
                     );
@@ -218,33 +178,19 @@ export default function TaskBoardPage() {
 
             {/* ═══ Orders List ═══ */}
             {loading ? (
-                <div style={{ display: 'flex', justifyContent: 'center', padding: '60px' }}>
+                <div className="task-loading">
                     <Loader2 size={28} style={{ animation: 'spin 1s linear infinite', color: 'var(--accent)' }} />
                 </div>
             ) : filteredOrders.length === 0 ? (
-                <div style={{
-                    textAlign: 'center', padding: '56px 20px',
-                    background: 'white', borderRadius: '20px',
-                    border: '1px solid var(--surface-100)',
-                    boxShadow: '0 2px 12px rgba(0,0,0,0.03)',
-                }}>
-                    <div style={{
-                        width: 60, height: 60, borderRadius: 18,
-                        background: 'var(--surface-50)', display: 'flex',
-                        alignItems: 'center', justifyContent: 'center',
-                        margin: '0 auto 16px',
-                    }}>
+                <div className="task-empty">
+                    <div className="task-empty-icon">
                         <Search size={26} style={{ color: 'var(--ink-ghost)' }} />
                     </div>
-                    <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--ink-muted)', marginBottom: '6px' }}>
-                        {taskSearch ? 'ძიებით ვერაფერი მოიძებნა' : filter ? 'ამ სტატუსით შეკვეთები არ არის' : 'შეკვეთები ჯერ არ არის'}
-                    </h3>
-                    <p style={{ fontSize: '14px', color: 'var(--ink-faint)' }}>
-                        {taskSearch ? 'სცადეთ სხვა საძიებო ტექსტი' : 'ახალი შეკვეთები აქ გამოჩნდება'}
-                    </p>
+                    <h3>{taskSearch ? 'ძიებით ვერაფერი მოიძებნა' : filter ? 'ამ სტატუსით შეკვეთები არ არის' : 'შეკვეთები ჯერ არ არის'}</h3>
+                    <p>{taskSearch ? 'სცადეთ სხვა საძიებო ტექსტი' : 'ახალი შეკვეთები აქ გამოჩნდება'}</p>
                 </div>
             ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div className="task-list">
                     {filteredOrders.map((order, idx) => {
                         const sc = STATUS_CONFIG[order.status] || STATUS_CONFIG.PENDING;
                         const StatusIcon = sc.icon;
@@ -252,158 +198,80 @@ export default function TaskBoardPage() {
                         const isPending = order.status === 'PENDING';
 
                         return (
-                            <div key={order.id}
+                            <div key={order.id} className="task-card"
                                 style={{
-                                    background: 'white', borderRadius: '18px',
-                                    border: '1px solid rgba(0,0,0,0.06)',
-                                    borderLeft: `4px solid ${sc.color}`,
-                                    overflow: 'hidden',
-                                    transition: 'all 0.25s',
-                                    animation: `fadeInUp 0.3s ease-out ${idx * 0.03}s both`,
-                                    boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
-                                }}
-                                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.07)'; }}
-                                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.03)'; }}
-                            >
-                                <div style={{ padding: '16px 20px', cursor: 'pointer' }}
-                                    onClick={() => navigate(`/orders/${order.id}`)}>
-
-                                    {/* ── Row 1: Status + Time ── */}
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                                        <div style={{
-                                            display: 'inline-flex', alignItems: 'center', gap: '6px',
-                                            padding: '4px 12px', borderRadius: '20px',
-                                            background: sc.bg, fontSize: '11px', fontWeight: 700,
-                                            color: sc.color,
-                                        }}>
+                                    borderLeftColor: sc.color,
+                                    animationDelay: `${idx * 0.03}s`,
+                                }}>
+                                <div className="task-card-body" onClick={() => navigate(`/orders/${order.id}`)}>
+                                    {/* Row 1: Status + Time */}
+                                    <div className="task-card-row1">
+                                        <div className="task-card-badge" style={{ background: sc.bg, color: sc.color }}>
                                             <StatusIcon size={12} />
                                             {sc.label}
                                         </div>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                            <span style={{
-                                                fontSize: '11px', color: 'var(--ink-faint)',
-                                                display: 'flex', alignItems: 'center', gap: '4px',
-                                                fontFamily: 'var(--font-mono)',
-                                            }}>
-                                                <Clock size={11} /> {getTimeAgo(order.createdAt)} წინ
-                                            </span>
-                                            <ChevronRight size={16} style={{ color: 'var(--ink-ghost)' }} />
+                                        <div className="task-card-time">
+                                            <span><Clock size={11} /> {getTimeAgo(order.createdAt)} წინ</span>
+                                            <ChevronRight size={16} className="task-card-chevron" />
                                         </div>
                                     </div>
 
-                                    {/* ── Row 2: Vehicle ── */}
+                                    {/* Row 2: Vehicle */}
                                     {order.vehicle && (
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
-                                            <div style={{
-                                                width: 42, height: 42, borderRadius: 12,
-                                                background: `linear-gradient(135deg, ${sc.bg}, ${sc.color}12)`,
-                                                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                                            }}>
-                                                <Car size={20} style={{ color: sc.color }} />
+                                        <div className="task-card-vehicle">
+                                            <div className="task-card-vehicle-icon" style={{ background: `linear-gradient(135deg, ${sc.bg}, ${sc.color}12)` }}>
+                                                <Car size={18} style={{ color: sc.color }} />
                                             </div>
-                                            <div style={{ flex: 1, minWidth: 0 }}>
-                                                <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
-                                                    <span style={{ fontSize: '16px', fontWeight: 700 }}>
-                                                        {order.vehicle.make} {order.vehicle.model}
-                                                    </span>
-                                                    <span style={{ fontSize: '12px', color: 'var(--ink-faint)' }}>{order.vehicle.year}</span>
+                                            <div className="task-card-vehicle-info">
+                                                <div className="task-card-vehicle-name">
+                                                    <span className="task-card-make">{order.vehicle.make} {order.vehicle.model}</span>
+                                                    <span className="task-card-year">{order.vehicle.year}</span>
                                                 </div>
                                                 {order.vehicle.plateNumber && (
-                                                    <span style={{
-                                                        fontFamily: 'var(--font-mono)', fontSize: '11px',
-                                                        color: 'var(--ink-muted)', background: 'var(--surface-50)',
-                                                        padding: '2px 8px', borderRadius: '5px', fontWeight: 600,
-                                                        border: '1px solid var(--surface-100)',
-                                                        display: 'inline-block', marginTop: '3px',
-                                                    }}>{order.vehicle.plateNumber}</span>
+                                                    <span className="task-card-plate">{order.vehicle.plateNumber}</span>
                                                 )}
                                             </div>
                                         </div>
                                     )}
 
-                                    {/* ── Row 3: Problem ── */}
+                                    {/* Row 3: Problem */}
                                     {order.problemDescription && (
-                                        <p style={{
-                                            fontSize: '13px', color: 'var(--ink-light)', lineHeight: 1.6,
-                                            marginBottom: '10px',
-                                            display: '-webkit-box', WebkitLineClamp: 2,
-                                            WebkitBoxOrient: 'vertical', overflow: 'hidden',
-                                        }}>
-                                            {order.problemDescription}
-                                        </p>
+                                        <p className="task-card-desc">{order.problemDescription}</p>
                                     )}
 
-                                    {/* ── Row 4: Meta pills ── */}
-                                    <div style={{
-                                        display: 'flex', alignItems: 'center', gap: '8px',
-                                        flexWrap: 'wrap', fontSize: '12px',
-                                    }}>
+                                    {/* Row 4: Meta pills */}
+                                    <div className="task-card-meta">
                                         {order.client && (
-                                            <span style={{
-                                                display: 'flex', alignItems: 'center', gap: '4px',
-                                                padding: '4px 10px', borderRadius: '8px',
-                                                background: 'var(--surface-50)', color: 'var(--ink-muted)',
-                                                fontWeight: 500,
-                                            }}>
+                                            <span className="task-meta-pill">
                                                 <User size={11} /> {order.client.name}
                                             </span>
                                         )}
                                         {order.client?.phone && (
                                             <a href={`tel:${order.client.phone}`}
                                                 onClick={(e) => e.stopPropagation()}
-                                                style={{
-                                                    display: 'flex', alignItems: 'center', gap: '4px',
-                                                    padding: '4px 10px', borderRadius: '8px',
-                                                    background: '#EFF6FF', color: '#2563EB',
-                                                    textDecoration: 'none', fontWeight: 600,
-                                                    transition: 'all 0.15s',
-                                                }}
-                                                onMouseEnter={e => e.currentTarget.style.background = '#DBEAFE'}
-                                                onMouseLeave={e => e.currentTarget.style.background = '#EFF6FF'}
-                                            >
+                                                className="task-meta-pill task-meta-phone">
                                                 <Phone size={10} /> დარეკვა
                                             </a>
                                         )}
                                         {order.address && (
-                                            <span style={{
-                                                display: 'flex', alignItems: 'center', gap: '4px',
-                                                padding: '4px 10px', borderRadius: '8px',
-                                                background: 'var(--surface-50)', color: 'var(--ink-faint)',
-                                                maxWidth: '220px',
-                                            }}>
-                                                <MapPin size={10} style={{ flexShrink: 0 }} />
-                                                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                                    {order.address}
-                                                </span>
+                                            <span className="task-meta-pill task-meta-addr">
+                                                <MapPin size={10} />
+                                                <span>{order.address}</span>
                                             </span>
                                         )}
                                     </div>
                                 </div>
 
-                                {/* ── Reject button ── */}
+                                {/* Reject section */}
                                 {canReject && (
-                                    <div style={{
-                                        padding: '10px 20px', borderTop: '1px solid rgba(0,0,0,0.04)',
-                                        background: isPending ? 'linear-gradient(135deg, rgba(254,243,199,0.3), rgba(254,243,199,0.15))' : 'var(--surface-50)',
-                                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                    }}>
+                                    <div className={`task-card-footer ${isPending ? 'pending' : ''}`}>
                                         {isPending && (
-                                            <span style={{ fontSize: '12px', color: '#D97706', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                            <span className="task-footer-alert">
                                                 <AlertCircle size={13} /> ელოდება თქვენს პასუხს
                                             </span>
                                         )}
                                         <button onClick={(e) => { e.stopPropagation(); setShowRejectModal(order.id); }}
-                                            style={{
-                                                display: 'flex', alignItems: 'center', gap: '5px',
-                                                padding: '6px 14px', borderRadius: '10px',
-                                                background: 'rgba(220,38,38,0.06)', border: '1px solid rgba(220,38,38,0.1)',
-                                                color: '#DC2626', fontSize: '12px', fontWeight: 600,
-                                                cursor: 'pointer', fontFamily: 'var(--font-sans)',
-                                                transition: 'all 0.2s', marginLeft: 'auto',
-                                            }}
-                                            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(220,38,38,0.12)'; }}
-                                            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(220,38,38,0.06)'; }}
-                                        >
+                                            className="task-reject-btn">
                                             <XCircle size={12} /> უარყოფა
                                         </button>
                                     </div>
@@ -417,13 +285,9 @@ export default function TaskBoardPage() {
             {/* ═══ Reject Modal ═══ */}
             {showRejectModal && (
                 <div className="modal-overlay" onClick={() => { setShowRejectModal(null); setRejectReason(''); }}>
-                    <div className="modal" onClick={(e) => e.stopPropagation()} style={{ borderRadius: '20px', padding: '30px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '22px' }}>
-                            <div style={{
-                                width: 46, height: 46, borderRadius: 14,
-                                background: 'var(--error-light)',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            }}>
+                    <div className="modal" onClick={(e) => e.stopPropagation()} style={{ borderRadius: '20px', padding: '24px' }}>
+                        <div className="task-modal-header">
+                            <div className="task-modal-icon">
                                 <AlertCircle size={22} style={{ color: 'var(--error)' }} />
                             </div>
                             <div>
@@ -437,7 +301,7 @@ export default function TaskBoardPage() {
                                 placeholder="მაგ: ამ ზონაში ვერ მივდივარ, ძალიან შორსაა..."
                                 style={{ minHeight: '90px', borderRadius: '12px' }} />
                         </div>
-                        <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                        <div className="task-modal-actions">
                             <button className="btn btn-outline" onClick={() => { setShowRejectModal(null); setRejectReason(''); }}
                                 style={{ borderRadius: '12px' }}>
                                 გაუქმება

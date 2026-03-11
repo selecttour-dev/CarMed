@@ -139,30 +139,30 @@ export default function OrderDetailPage() {
             </button>
 
             {/* Header Card */}
-            <div className="card p-5 sm:p-6 mb-6 animate-fade-in-up">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
+            <div className="card p-4 sm:p-6 mb-5 sm:mb-6 animate-fade-in-up">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div className="flex items-center gap-3 sm:gap-4">
                         {order.vehicle && (
-                            <div className="w-14 h-14 rounded-[16px] bg-surface-50 border border-surface-100 flex items-center justify-center p-2">
+                            <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-[14px] sm:rounded-[16px] bg-surface-50 border border-surface-100 flex items-center justify-center p-1.5 sm:p-2 flex-shrink-0">
                                 {getMakeLogo(order.vehicle.make) ? (
                                     <img src={getMakeLogo(order.vehicle.make)} alt={order.vehicle.make} className="w-full h-full object-contain" />
                                 ) : (
-                                    <Car size={24} className="text-ink-faint" />
+                                    <Car size={22} className="text-ink-faint" />
                                 )}
                             </div>
                         )}
-                        <div>
-                            <div className="flex items-center gap-3 mb-0.5">
-                                <h1 className="text-[18px] font-extrabold tracking-tight text-ink font-display">
+                        <div className="min-w-0">
+                            <div className="flex flex-wrap items-center gap-2 mb-0.5">
+                                <h1 className="text-[16px] sm:text-[18px] font-extrabold tracking-tight text-ink font-display">
                                     {order.vehicle ? `${order.vehicle.make} ${order.vehicle.model}` : 'შეკვეთა'}
                                 </h1>
-                                <span className="badge text-[11px]"
+                                <span className="badge text-[10px] sm:text-[11px]"
                                     style={{ background: st.bg, color: st.color, border: `1px solid ${st.border}` }}>
                                     <span className="w-1.5 h-1.5 rounded-full" style={{ background: st.dot }} />
                                     {st.label}
                                 </span>
                             </div>
-                            <div className="flex items-center gap-3 text-ink-muted text-[12px]">
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-ink-muted text-[11px] sm:text-[12px]">
                                 {order.vehicle?.plateNumber && (
                                     <span className="font-mono font-semibold text-ink-light">{order.vehicle.plateNumber}</span>
                                 )}

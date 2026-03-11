@@ -61,8 +61,8 @@ export default function CreateOrderPage() {
             </button>
 
             {/* Header */}
-            <div className="mb-8 animate-fade-in-up">
-                <h1 className="page-title">ახალი შეკვეთა</h1>
+            <div className="mb-6 sm:mb-8 animate-fade-in-up">
+                <h1 className="text-[20px] sm:text-[24px] font-extrabold tracking-tight text-ink font-display">ახალი შეკვეთა</h1>
                 <p className="page-subtitle">გამოიძახეთ მენეჯერი თქვენი ავტომობილისთვის</p>
             </div>
 
@@ -79,10 +79,10 @@ export default function CreateOrderPage() {
                         <Car size={30} className="text-ink-faint" />
                     </div>
                     <h3 className="text-[17px] font-bold text-ink mb-2">ჯერ ავტომობილი არ გაქვთ</h3>
-                    <p className="text-ink-muted text-[13px] mb-6">ჯერ დაამატეთ ავტომობილი გარაჟში</p>
+                    <p className="text-ink-muted text-[13px] mb-6">ჯერ დაამატეთ ავტომობილი მანქანებში</p>
                     <button className="btn-primary text-[14px] px-6 py-3"
                         onClick={() => navigate('/dashboard/garage')}>
-                        გარაჟში გადასვლა
+                        მანქანებში გადასვლა
                     </button>
                 </div>
             ) : (
