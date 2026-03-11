@@ -19,12 +19,16 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // ── Global Middleware ────────────────────────────────────────
-app.use(cors({
-    origin: [
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+    : [
         'http://localhost:5174', // Client Portal
         'http://localhost:5175', // Manager Portal
         'http://localhost:5176', // Admin Portal
-    ],
+    ];
+
+app.use(cors({
+    origin: allowedOrigins,
     credentials: true,
 }));
 app.use(express.json({ limit: '10mb' }));
